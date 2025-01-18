@@ -216,7 +216,7 @@ function Sent() {
                       </div>
                       <DialogFooter>
                         <Button type="submit">
-                          {isPending ? "transfering ..." : "confirm transform"}
+                          {isPending ? "transfering ..." : "confirm transfer"}
                         </Button>
                       </DialogFooter>
                     </form>
