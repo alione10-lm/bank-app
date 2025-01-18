@@ -38,6 +38,9 @@ function Wallet() {
         </h1>
         <p className="text-sm  text-slate-400">{new Date().toDateString()}</p>
       </div>
+      <div className="flex-1 rounded-xl bg-muted/50 md:min-h-min">
+        <Component />
+      </div>
       <div className="grid auto-rows-min gap-4  md:grid-cols-2">
         <div className="aspect-video rounded-xl flex flex-col  p-2 md:p-4 bg-muted/50">
           <p>My card</p>
