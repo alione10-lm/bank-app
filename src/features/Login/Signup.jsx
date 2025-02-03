@@ -64,13 +64,10 @@ function Signup() {
   return (
     <div className="w-full h-screen flex flex-col justify-center items-center px-4 ">
       <h1 className="font-medium">Sign Up form</h1>
-      <form onSubmit={handleSubmit(OnSubmit)} className="">
+      <form onSubmit={handleSubmit(OnSubmit)} className="w-[50%]">
         <Formrow>
           <Label>Email</Label>
           <Input required type="email" {...register("email")} />
-          {/* <span className="text-xs text-red-500 w-full rounded-md">
-            this field is required
-          </span> */}
         </Formrow>
         <Formrow>
           <Label>First name</Label>

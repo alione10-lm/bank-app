@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useState } from "react";
+
 function Wallet() {
   const [authUser, setautthUser] = useState();
 
@@ -32,9 +33,16 @@ function Wallet() {
       <div className="flex w-full justify-between md:items-center">
         <h1 className="md:text-xl">
           welcome back,
-          <span className="font-medium text-indigo-500">
-            {user[0]?.firstName} {user[0].lastName}{" "}
-          </span>
+          <ShinyText
+            text={
+              <span className="font-medium text-indigo-500">
+                {user[0]?.firstName} {user[0].lastName}
+              </span>
+            }
+            disabled={false}
+            speed={3}
+            className="custom-class"
+          />
         </h1>
         <p className="text-sm  text-slate-400">{new Date().toDateString()}</p>
       </div>
@@ -138,6 +146,7 @@ import { data, Link, NavLink, useNavigate } from "react-router-dom";
 import supabase from "../services/supabase/supabase";
 import { formatCurrency } from "../utils/helpers";
 import { date } from "zod";
+import ShinyText from "../reactBitUi/TextAnimations/ShinyText/ShinyText";
 
 const chartData = [
   { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },

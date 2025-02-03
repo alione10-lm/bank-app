@@ -43,7 +43,7 @@ function Signin() {
 
   return (
     <div className="w-full h-screen flex flex-col justify-center gap-4 items-center px-4 ">
-      <form onSubmit={handleSubmit(OnSubmit)} className="">
+      <form onSubmit={handleSubmit(OnSubmit)}>
         <Formrow>
           <Label>Email</Label>
           <Input type="email" {...register("email")} />
@@ -53,14 +53,13 @@ function Signin() {
           <Input type="password" {...register("password")} />
         </Formrow>
         <Button>Sign in</Button>
+        <p className="mt-5">
+          if you don't have account,
+          <Link to="/signup" className="text-indigo-500">
+            sign up &rarr;
+          </Link>
+        </p>
       </form>
-      <p className="">
-        if you don't have account
-        <br />
-        <Link to="/signup" className="text-indigo-500">
-          sign up &rarr;
-        </Link>
-      </p>
     </div>
   );
 }

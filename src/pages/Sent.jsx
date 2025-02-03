@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getOneUser, getUsers } from "../services/apiUsers";
+import { getOneUser, getUsers, ReceiverUser } from "../services/apiUsers";
 import Spinner from "../components/ui/spinner";
 import { useEffect, useState } from "react";
 
@@ -22,27 +22,88 @@ import { useForm } from "react-hook-form";
 import supabase from "../services/supabase/supabase";
 import { useToast } from "../hooks/use-toast";
 
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
+const invoices = [
+  {
+    invoice: "INV001",
+    paymentStatus: "Paid",
+    totalAmount: "$250.00",
+    paymentMethod: "Credit Card",
+  },
+  {
+    invoice: "INV002",
+    paymentStatus: "Pending",
+    totalAmount: "$150.00",
+    paymentMethod: "PayPal",
+  },
+  {
+    invoice: "INV003",
+    paymentStatus: "Unpaid",
+    totalAmount: "$350.00",
+    paymentMethod: "Bank Transfer",
+  },
+  {
+    invoice: "INV004",
+    paymentStatus: "Paid",
+    totalAmount: "$450.00",
+    paymentMethod: "Credit Card",
+  },
+  {
+    invoice: "INV005",
+    paymentStatus: "Paid",
+    totalAmount: "$550.00",
+    paymentMethod: "PayPal",
+  },
+  {
+    invoice: "INV006",
+    paymentStatus: "Pending",
+    totalAmount: "$200.00",
+    paymentMethod: "Bank Transfer",
+  },
+  {
+    invoice: "INV007",
+    paymentStatus: "Unpaid",
+    totalAmount: "$300.00",
+    paymentMethod: "Credit Card",
+  },
+];
+
 function Sent() {
   const [AuthUser, setAuthUser] = useState();
   const queryClient = useQueryClient();
+  const [cardNumber, setCardNumber] = useState("");
+
+  const { toast } = useToast();
+
+  const { data: filtredUser, isLoading: isGettingsReciever } = useQuery({
+    queryKey: ["filterUserByHisCardNumber", cardNumber],
+    queryFn: () => ReceiverUser(cardNumber),
+  });
+  const { handleSubmit, register } = useForm();
 
   const {
     data: user,
-    isLoading: isSending,
+    isLoading: gettingCurrentUser,
     error,
   } = useQuery({
     queryKey: ["getAuthuserInfo"],
     queryFn: () => getOneUser(AuthUser),
   });
 
-  const { toast } = useToast();
-
   const { data: users, isLoading } = useQuery({
     queryKey: ["getUsers"],
     queryFn: getUsers,
   });
-
-  const { handleSubmit, register } = useForm();
 
   const { mutate: sendTo, isPending } = useMutation({
     mutationKey: "sendMoney",
@@ -79,7 +140,6 @@ function Sent() {
           },
         ])
         .select();
-      return data;
     },
   });
 
@@ -133,20 +193,136 @@ function Sent() {
     setAuthUser(userData);
   }, []);
 
-  if (isLoading)
+  if (gettingCurrentUser)
     return (
-      <div>
-        <Spinner /> Loading
+      <div className="flex w-full h-[100%] justify-center items-center ">
+        <Spinner />
       </div>
     );
 
   return (
-    <div>
-      <h1>quik money transfer to :</h1>
+    <div className="w-full md:p-4 p-2">
+      <h1 className="mb-10">quik money transfer to : 76122562 , </h1>
       <div>
-        <Input />
+        <Input
+          onChange={(e) => setCardNumber(e.target.value)}
+          placeholder="find a receiver"
+          className="w-[50%] mb-8 md:mb-16"
+        />
+        <Table>
+          <TableCaption>A list of your recent invoices.</TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="">avatar</TableHead>
+              <TableHead className="truncate max-w-20 md:w-[40%]  ">
+                email
+              </TableHead>
+              <TableHead>card number</TableHead>
+              <TableHead className="text-right">action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {!isGettingsReciever && filtredUser?.length === 0 && (
+              <p className="w-full text-center">user not found</p>
+            )}
+            {isGettingsReciever ? (
+              <div className=" w-full flex items-center justify-center">
+                searching...
+              </div>
+            ) : (
+              filtredUser?.map(
+                (user) =>
+                  AuthUser?.cardNumber !== user.cardNumber && (
+                    <TableRow key={user.id}>
+                      <TableCell className="">
+                        <Avatar>
+                          <AvatarFallback>ab</AvatarFallback>
+                          <AvatarImage
+                            className="md:w-16 w-8 rounded-md"
+                            src={user.avatar}
+                          />
+                        </Avatar>
+                      </TableCell>
+                      <TableCell className="truncate max-w-20 md:w-[40%] ">
+                        {user.email}
+                      </TableCell>
+                      <TableCell>{user.cardNumber}</TableCell>
+                      <TableCell className="text-right">
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button variant="outline">send</Button>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-[425px]">
+                            <DialogHeader>
+                              <DialogTitle>
+                                transfer money to {user.firstName}
+                              </DialogTitle>
+                              <DialogDescription />
+                            </DialogHeader>
+                            <form action="" onSubmit={handleSubmit(OnSubmit)}>
+                              <div className="grid gap-4 py-4">
+                                <div className="grid grid-cols-4 items-center gap-4">
+                                  <Label
+                                    htmlFor="amount"
+                                    className="text-right"
+                                  >
+                                    Amount
+                                  </Label>
+                                  <Input
+                                    id="name"
+                                    {...register("amount")}
+                                    className="col-span-3"
+                                  />
+                                </div>
+                                <div className="grid grid-cols-4 items-center gap-4">
+                                  <Label
+                                    htmlFor="reason"
+                                    className="text-right"
+                                  >
+                                    Reason
+                                  </Label>
+                                  <Input
+                                    id="reason"
+                                    {...register("reason")}
+                                    className="col-span-3"
+                                  />
+                                </div>
+                                <div className="grid grid-cols-4 items-center gap-4">
+                                  <Input
+                                    id="reason"
+                                    type="hidden"
+                                    value={user.id}
+                                    className="col-span-3"
+                                    {...register("id")}
+                                  />
+                                  <Input
+                                    id="reason"
+                                    type="hidden"
+                                    value={user.firstName}
+                                    className="col-span-3"
+                                    {...register("username")}
+                                  />
+                                </div>
+                              </div>
+                              <DialogFooter>
+                                <Button type="submit">
+                                  {isPending
+                                    ? "transfering ..."
+                                    : "confirm transfer"}
+                                </Button>
+                              </DialogFooter>
+                            </form>
+                          </DialogContent>
+                        </Dialog>
+                      </TableCell>
+                    </TableRow>
+                  )
+              )
+            )}
+          </TableBody>
+        </Table>
       </div>
-      <div className="w-fit flex flex-col ">
+      {/* <div className="w-fit flex flex-col ">
         {users?.map(
           (user) =>
             AuthUser?.id !== user?.id && (
@@ -225,7 +401,7 @@ function Sent() {
               </div>
             )
         )}
-      </div>
+      </div> */}
     </div>
   );
 }
